@@ -79,7 +79,7 @@ public class AuthTokenController {
             this.cookieService=cookieService;
         }
         @PostMapping("/login")
-        public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response){
+        public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response){
             // authenticate
             logger.info("Login request received for email: {}", loginRequest.email());
 
@@ -105,20 +105,26 @@ public class AuthTokenController {
             String refreshToken=jwtService.generateRefreshToken(user,refreshTokenOb.getJti());
             logger.info("Access token generated successfully");
             // use cookie service to attach refresh token in cookie
-            cookieService.attachRefreshCookie(response,refreshToken, (int) jwtService.getRefreshTtlSeconds());
+//            cookieService.attachRefreshCookie(response,refreshToken, (int) jwtService.getRefreshTtlSeconds());
 
             TokenResponse tokenResponse= TokenResponse.of(accesstoken,refreshToken, jwtService.getAccessTtlSeconds(),mapper.map(user, AuthUserDto.class));
             return  ResponseEntity.ok(tokenResponse);
 
         }
 
-        private Authentication authenticate(LoginRequest loginRequest) {
-            try {
-                return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password()));
-            } catch (AuthenticationException e) {
-                throw new BadCredentialsException("InvalidCredentials");
-            }
+    private Authentication authenticate(LoginRequest loginRequest) {
+        try {
+            return authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.email(),
+                            loginRequest.password()
+                    )
+            );
+        } catch (AuthenticationException e) {
+            logger.error("Authentication failed", e);
+            throw e;
         }
+    }
 
 
         //    Client → /refresh (with refresh token)

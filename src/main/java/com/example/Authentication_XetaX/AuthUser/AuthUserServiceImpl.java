@@ -45,6 +45,7 @@ public class AuthUserServiceImpl implements AuthUserService, UserDetailsService 
         user.setParentId(userDto.getParentId()!=null?userDto.getParentId():"#");
         user.setProvider(userDto.getProvider()!=null?userDto.getProvider(): LoginProvider.LOCAL);
         user.setCreateAt(Instant.now());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         //role assign here to user  for authorization
         AuthRoleEntity role = roleRepository.findByName("ROLE_" + AuthPublicUrls.GUEST_ROLE)
                 .orElseThrow(() -> new RuntimeException("Role not found"));

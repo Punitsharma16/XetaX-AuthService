@@ -4,6 +4,7 @@ import com.example.Authentication_XetaX.AuthRole.AuthRoleDto;
 import com.example.Authentication_XetaX.AuthToken.AuthTokenEntity.LoginProvider;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AuthUserDto {
+public class AuthUserDto implements Serializable {
     private UUID id;
     private String email;
     private String password;
